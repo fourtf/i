@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -14,35 +15,51 @@ import (
 var (
 	// the address to listen on
 	address = "127.0.0.1:9005"
-	// the password to upload files
-	key = "password"
 	// the directory to save the images in
 	root = "/var/www/i.fourtf.com/"
 	// the root of the link that will be generated
-	webRoot = "http://i.fourtf.com/"
+	webRoot = "https://i.fourtf.com/"
 
 	// maximum age for the files
 	// the program will delete the files older than maxAge every 2 hours
-	maxAge = time.Hour * 24 * 30
+	maxAge = time.Hour * 24 * 365
 	// files to be ignored when delting old files
 	deleteIgnoreRegexp = regexp.MustCompile("index\\.html|favicon\\.ico")
 
 	// length of the random filename
-	randomFilenameLength = 8
-	// characters to use for the random filename
-	randomFilenameLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	randomAdjectivesCount = 3
+	adjectives            = make([]string, 0)
+	lastWord              = "Pepe"
 )
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	// collect old files every 2 hours
-	go func() {
-		for {
-			<-time.After(time.Hour * 2)
-			collectGarbage()
+	file, err := os.Open("./adjectives1.txt")
+
+	if err != nil {
+		panic(err)
+	}
+
+	r := bufio.NewReader(file)
+
+	for {
+		line, _, err := r.ReadLine()
+
+		if err != nil {
+			break
 		}
-	}()
+
+		adjectives = append(adjectives, string(line))
+	}
+
+	// uncomment to collect old files
+	// go func() {
+	// 	for {
+	// 		<-time.After(time.Hour * 2)
+	// 		collectGarbage()
+	// 	}
+	// }()
 
 	// create server with read and write timeouts and the desired address
 	server := &http.Server{
@@ -57,11 +74,15 @@ func main() {
 }
 
 func handleUpload(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
 	infile, header, err := r.FormFile("file")
 	if err != nil {
 		http.Error(w, "Error parsing uploaded file: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	defer infile.Close()
 
 	filename := header.Filename
 	var ext string
@@ -81,13 +102,15 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 
 	// find a random filename that doesn't exist already
 	for i := 0; i < 100; i++ {
-		b := make([]rune, randomFilenameLength)
-		for i := range b {
-			b[i] = randomFilenameLetters[rand.Intn(len(randomFilenameLetters))]
+		random := ""
+
+		for j := 0; j < randomAdjectivesCount; j++ {
+			random += strings.TrimSpace(strings.Title(adjectives[rand.Intn(len(adjectives))]))
 		}
 
-		random := string(b)
+        random += lastWord
 
+		// fuck with link
 		savePath = root + random + ext
 		link = webRoot + random + ext
 
@@ -111,7 +134,7 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 	outfile.Close()
 
 	// return the link as the http body
-	http.Error(w, link, 200)
+	w.Write([]byte(link))
 
 	// do this or it doesn't work
 	io.Copy(ioutil.Discard, r.Body)
