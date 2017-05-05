@@ -1,0 +1,59 @@
+{
+    "image": [
+        "jpg",
+        "png",
+        "tiff",
+        "tif",
+        "bmp",
+        "gif"
+    ],
+    "icon": [
+        "ico"
+    ],
+    "document": [
+        "json",
+        "ppt",
+        "ppz",
+        "pps",
+        "pot",
+        "doc",
+        "xlsx",
+        "docx",
+        "htm",
+        "html",
+        "shtml",
+        "xhtml",
+        "xml",
+        "latex",
+        "css",
+        "rtf"
+    ],
+    "video": [
+        "mp4",
+        "webm",
+        "avi",
+        "mov",
+        "mpeg",
+        "mpg"
+    ],
+    "archive": [
+        "zip",
+        "tar"
+    ],
+    "code": [
+        "js"
+    ],
+    "program": [
+        "exe"
+    ],
+    "script": [
+        "sh",
+        "bat"
+    ],
+    "library": [
+        "dll"
+    ],
+    "song": [
+        "mp3"
+    ]
+}

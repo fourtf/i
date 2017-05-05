@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -27,13 +29,31 @@ var (
 	deleteIgnoreRegexp = regexp.MustCompile("index\\.html|favicon\\.ico")
 
 	// length of the random filename
-	randomAdjectivesCount = 3
+	randomAdjectivesCount = 2
 	adjectives            = make([]string, 0)
-	lastWord              = "Pepe"
+	filetypes             = make(map[string]string)
 )
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
+
+	b, err := ioutil.ReadFile("./filetypes.json")
+
+	if err == nil {
+		data := make(map[string][]string)
+
+		if err = json.Unmarshal(b, &data); err != nil {
+			fmt.Println(err)
+		} else {
+			for val, keys := range data {
+				for _, key := range keys {
+					filetypes["." + strings.TrimLeft(key, ".")] = val
+				}
+			}
+		}
+	}
+
+    fmt.Println(filetypes)
 
 	file, err := os.Open("./adjectives1.txt")
 
@@ -97,6 +117,14 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 		filename = filename[:index]
 	}
 
+	lastWord := "File"
+
+    fmt.Println(ext)
+
+	if val, ok := filetypes[ext]; ok {
+		lastWord = strings.Title(val)
+	}
+
 	var savePath string
 	var link string
 
@@ -108,7 +136,7 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 			random += strings.TrimSpace(strings.Title(adjectives[rand.Intn(len(adjectives))]))
 		}
 
-        random += lastWord
+		random += lastWord
 
 		// fuck with link
 		savePath = root + random + ext
