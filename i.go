@@ -25,7 +25,7 @@ var (
 	// maximum age for the files
 	// the program will delete the files older than maxAge every 2 hours
 	maxAge = time.Hour * 24 * 365
-	// files to be ignored when delting old files
+	// files to be ignored when deleting old files
 	deleteIgnoreRegexp = regexp.MustCompile("index\\.html|favicon\\.ico")
 
 	// length of the random filename
