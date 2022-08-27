@@ -28,16 +28,16 @@ It does ***not*** serve the files or handle authentification. It is meant to be 
     }
     ```
  - Create a .htpasswd file using `htpasswd -c /etc/fileupload.htpasswd user` and enter a password.
- - Base64 encode user:password `echo -n user:yourpassword | base64` and add a header `Authorization: Basic <your base64>` in sharex 
- 
+ - Base64 encode user:password `echo -n user:yourpassword | base64` and add a header `Authorization: Basic <your base64>` in sharex
+
     ![sharex_auth.png](sharex_auth.png)
 
 ## if you are using caddy
- - Create a reverse proxy for your webserver. For example use i.example.com/upload to upload the images (by default to port 9005). Add basic auth to hande the authentification.
+ - Create a reverse proxy for your webserver. For example use i.example.com/upload to upload the images (by default to port 9005). Add basic auth to handle the authentification.
     ```
     i.example.com {
         root /var/www/i.example.com
-   
+
         basicauth /upload user yourpassword
         proxy /upload localhost:9005
     }
