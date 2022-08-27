@@ -3,7 +3,7 @@
 *.a
 *.so
 i
-i.*
+i.exe
 
 # Folders
 _obj
