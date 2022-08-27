@@ -47,13 +47,13 @@ func main() {
 		} else {
 			for val, keys := range data {
 				for _, key := range keys {
-					filetypes["." + strings.TrimLeft(key, ".")] = val
+					filetypes["."+strings.TrimLeft(key, ".")] = val
 				}
 			}
 		}
 	}
 
-    fmt.Println(filetypes)
+	fmt.Println(filetypes)
 
 	file, err := os.Open("./adjectives1.txt")
 
@@ -119,7 +119,7 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 
 	lastWord := "File"
 
-    fmt.Println(ext)
+	fmt.Println(ext)
 
 	if val, ok := filetypes[ext]; ok {
 		lastWord = strings.Title(val)
@@ -176,12 +176,21 @@ func collectGarbage() {
 	}
 
 	for _, file := range files {
-		if file.IsDir() || deleteIgnoreRegexp.MatchString(file.Name()) {
+		fname := file.Name()
+
+		if file.IsDir() || deleteIgnoreRegexp.MatchString(fname) {
 			continue
 		}
 
-		if time.Now().Sub(file.ModTime()) > maxAge {
-			os.Remove(file.Name())
+		if time.Since(file.ModTime()) > maxAge {
+			err := os.Remove(root + fname)
+
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			fmt.Printf("Removed %s \n", fname)
 		}
 	}
 }
