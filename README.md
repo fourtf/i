@@ -18,7 +18,7 @@ It does ***not*** serve the files or handle authentification. It is meant to be 
  - Add a custom sharex uploader like this: ![sharex_example.png](sharex_example.png)
 
 ## if you are using nginx
- - Install the `apach2-utils` to generate a htpasswd file for authentification
+ - Install the `apache2-utils` to generate a htpasswd file for authentification
  - Create a reverse proxy for your webserver. For example use i.example.com/upload to upload the images (by default to port 9005). Add basic auth to hande the authentification.
     ```
     location /upload {
