@@ -39,7 +39,6 @@ It does ***not*** serve the files or handle authentification. It is meant to be 
     i.example.com {
         root * /var/www/i.example.com
         file_server
-
         basicauth /upload {
             user hashed_password
         }
