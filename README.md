@@ -33,13 +33,16 @@ It does ***not*** serve the files or handle authentification. It is meant to be 
     ![sharex_auth.png](sharex_auth.png)
 
 ## if you are using caddy
- - Create a reverse proxy for your webserver. For example use i.example.com/upload to upload the images (by default to port 9005). Add basic auth to handle the authentification.
+ - Create a reverse proxy for your webserver. For example use i.example.com/upload to upload the images (by default to port 9005).
+ - Create a hashed password with `caddy hash-password`, add basic auth to handle the authentification.
     ```
     i.example.com {
-        root /var/www/i.example.com
-
-        basicauth /upload user yourpassword
-        proxy /upload localhost:9005
+        root * /var/www/i.example.com
+        file_server
+        basicauth /upload {
+            user hashed_password
+        }
+        reverse_proxy /upload localhost:9005
     }
     ```
  - Base64 encode user:password `echo -n user:yourpassword | base64` and add a header `Authorization: Basic <your base64>` in sharex (image in the nginx example)
